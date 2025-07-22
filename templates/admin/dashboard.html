@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - LeakGPT Naija Pro{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold text-primary">
+                        <i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Monitor fraud detection activities and system analytics</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('export_documents') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-download me-1"></i>Export Documents
+                    </a>
+                    <a href="{{ url_for('export_scam_reports') }}" class="btn btn-outline-danger">
+                        <i class="fas fa-download me-1"></i>Export Scam Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold">{{ stats.total_documents }}</h3>
+                            <p class="mb-0">Total Documents</p>
+                        </div>
+                        <i class="fas fa-file-alt fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-danger text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold">{{ stats.flagged_documents }}</h3>
+                            <p class="mb-0">Flagged Documents</p>
+                        </div>
+                        <i class="fas fa-flag fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold">{{ stats.total_scam_reports }}</h3>
+                            <p class="mb-0">Scam Reports</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold">{{ "%.1f"|format(stats.avg_risk_score) }}</h3>
+                            <p class="mb-0">Avg Risk Score</p>
+                        </div>
+                        <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="date_filter" class="form-label">Date Range</label>
+                            <select class="form-select" id="date_filter" name="date_filter">
+                                <option value="7" {% if current_filters.date_filter == '7' %}selected{% endif %}>Last 7 days</option>
+                                <option value="30" {% if current_filters.date_filter == '30' %}selected{% endif %}>Last 30 days</option>
+                                <option value="90" {% if current_filters.date_filter == '90' %}selected{% endif %}>Last 90 days</option>
+                                <option value="365" {% if current_filters.date_filter == '365' %}selected{% endif %}>Last year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="type" class="form-label">Content Type</label>
+                            <select class="form-select" id="type" name="type">
+                                <option value="all" {% if current_filters.type == 'all' %}selected{% endif %}>All Types</option>
+                                <option value="documents" {% if current_filters.type == 'documents' %}selected{% endif %}>Documents Only</option>
+                                <option value="scams" {% if current_filters.type == 'scams' %}selected{% endif %}>Scam Reports Only</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="keyword" class="form-label">Keyword Filter</label>
+                            <input type="text" class="form-control" id="keyword" name="keyword" 
+                                   value="{{ current_filters.keyword }}" placeholder="Search keywords...">
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary d-block w-100">
+                                <i class="fas fa-search me-1"></i>Apply
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Keywords -->
+    {% if top_keywords %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Top Flagged Keywords</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for keyword, count in top_keywords %}
+                        <span class="badge bg-danger p-2">
+                            {{ keyword }} <span class="badge bg-light text-dark ms-1">{{ count }}</span>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="mainTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="documents-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#documents" type="button" role="tab">
+                                <i class="fas fa-file-alt me-2"></i>Document Analysis ({{ documents|length }})
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="scams-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#scams" type="button" role="tab">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Scam Reports ({{ scam_reports|length }})
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="messages-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#messages" type="button" role="tab">
+                                <i class="fas fa-envelope me-2"></i>Contact Messages ({{ contact_messages|length }})
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-body">
+                    <div class="tab-content" id="mainTabsContent">
+                        <!-- Documents Tab -->
+                        <div class="tab-pane fade show active" id="documents" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Filename</th>
+                                            <th>Type</th>
+                                            <th>Risk Score</th>
+                                            <th>Status</th>
+                                            <th>Keywords</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for doc in documents %}
+                                        <tr class="{% if doc.is_flagged %}table-danger{% endif %}">
+                                            <td><span class="badge bg-secondary">#{{ doc.id }}</span></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-file-{{ doc.file_type }} me-2"></i>
+                                                    <span>{{ doc.filename[:30] }}{% if doc.filename|length > 30 %}...{% endif %}</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-info">{{ doc.file_type.upper() }}</span></td>
+                                            <td>
+                                                <div class="progress" style="width: 60px; height: 8px;">
+                                                    <div class="progress-bar {% if doc.risk_score >= 70 %}bg-danger{% elif doc.risk_score >= 40 %}bg-warning{% else %}bg-success{% endif %}" 
+                                                         style="width: {{ doc.risk_score }}%"></div>
+                                                </div>
+                                                <small>{{ doc.risk_score }}/100</small>
+                                            </td>
+                                            <td>
+                                                {% if doc.is_flagged %}
+                                                <span class="badge bg-danger">Flagged</span>
+                                                {% else %}
+                                                <span class="badge bg-success">Clean</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% set keywords = doc.flagged_keywords|fromjson %}
+                                                {% if keywords %}
+                                                    {% for keyword in keywords[:3] %}
+                                                    <span class="badge bg-warning text-dark me-1">{{ keyword }}</span>
+                                                    {% endfor %}
+                                                    {% if keywords|length > 3 %}
+                                                    <small>+{{ keywords|length - 3 }} more</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                <span class="text-muted">None</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <small>{{ doc.analysis_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                                            </td>
+                                            <td>
+                                                <a href="{{ url_for('results', analysis_id=doc.id) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <i class="fas fa-file-alt fa-3x mb-3 opacity-25"></i><br>
+                                                No documents found matching the current filters.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Scam Reports Tab -->
+                        <div class="tab-pane fade" id="scams" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Type</th>
+                                            <th>Content</th>
+                                            <th>Risk Level</th>
+                                            <th>Patterns</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for report in scam_reports %}
+                                        <tr class="{% if report.risk_level == 'high' %}table-danger{% elif report.risk_level == 'medium' %}table-warning{% endif %}">
+                                            <td><span class="badge bg-secondary">#{{ report.id }}</span></td>
+                                            <td>
+                                                <span class="badge {% if report.report_type == 'message' %}bg-primary{% elif report.report_type == 'url' %}bg-warning{% else %}bg-danger{% endif %}">
+                                                    <i class="fas fa-{% if report.report_type == 'message' %}sms{% elif report.report_type == 'url' %}link{% else %}phone{% endif %} me-1"></i>
+                                                    {{ report.report_type.title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                                    {{ report.content[:50] }}{% if report.content|length > 50 %}...{% endif %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge {% if report.risk_level == 'high' %}bg-danger{% elif report.risk_level == 'medium' %}bg-warning{% else %}bg-success{% endif %}">
+                                                    {{ report.risk_level.title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% set patterns = report.flagged_patterns|fromjson %}
+                                                {% if patterns %}
+                                                    {% for pattern in patterns[:2] %}
+                                                    <span class="badge bg-warning text-dark me-1">{{ pattern }}</span>
+                                                    {% endfor %}
+                                                    {% if patterns|length > 2 %}
+                                                    <small>+{{ patterns|length - 2 }} more</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                <span class="text-muted">None</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <small>{{ report.reported_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                                            </td>
+                                            <td>
+                                                {% if report.is_verified %}
+                                                <span class="badge bg-success">Verified</span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                <i class="fas fa-exclamation-triangle fa-3x mb-3 opacity-25"></i><br>
+                                                No scam reports found matching the current filters.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Contact Messages Tab -->
+                        <div class="tab-pane fade" id="messages" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Subject</th>
+                                            <th>Message</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for message in contact_messages %}
+                                        <tr class="{% if not message.is_read %}table-info{% endif %}">
+                                            <td><span class="badge bg-secondary">#{{ message.id }}</span></td>
+                                            <td>{{ message.name }}</td>
+                                            <td>{{ message.email }}</td>
+                                            <td>{{ message.subject }}</td>
+                                            <td>
+                                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                                    {{ message.message[:50] }}{% if message.message|length > 50 %}...{% endif %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small>{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                            </td>
+                                            <td>
+                                                {% if message.is_read %}
+                                                <span class="badge bg-success">Read</span>
+                                                {% else %}
+                                                <span class="badge bg-primary">New</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                <i class="fas fa-envelope fa-3x mb-3 opacity-25"></i><br>
+                                                No contact messages found.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh every 30 seconds
+    setInterval(function() {
+        if (document.hidden) return; // Don't refresh if tab is not active
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const isFiltered = urlParams.has('date_filter') || urlParams.has('type') || urlParams.has('keyword');
+        
+        if (!isFiltered) {
+            // Only auto-refresh if no filters are applied
+            window.location.reload();
+        }
+    }, 30000);
+    
+    // Mark new items with animation
+    const newItems = document.querySelectorAll('.table-info');
+    newItems.forEach(item => {
+        item.style.animation = 'pulse 2s infinite';
+    });
+});
+
+// Add CSS for pulse animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

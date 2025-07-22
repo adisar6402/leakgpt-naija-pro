@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Document - LeakGPT Naija Pro{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="fw-bold text-primary">
+                    <i class="fas fa-upload me-3"></i>Upload Document for Analysis
+                </h1>
+                <p class="text-muted">
+                    Upload .txt or .pdf files to analyze for corruption, fraud, or suspicious activities. 
+                    Your upload is completely anonymous and secure.
+                </p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-upload me-2"></i>Document Upload</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                        <div class="mb-4">
+                            <label for="file" class="form-label fw-bold">Select Document</label>
+                            <input type="file" class="form-control form-control-lg" id="file" name="file" 
+                                   accept=".txt,.pdf" required>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Supported formats: .txt, .pdf (Maximum size: 16MB)
+                            </div>
+                        </div>
+
+                        <!-- File Preview -->
+                        <div id="filePreview" class="mb-4 d-none">
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-alt fa-2x me-3"></i>
+                                    <div>
+                                        <strong id="fileName"></strong><br>
+                                        <small id="fileSize" class="text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Notice -->
+                        <div class="alert alert-success">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-shield-alt me-2"></i>Privacy & Security
+                            </h6>
+                            <ul class="mb-0 small">
+                                <li>Your document is processed anonymously</li>
+                                <li>Files are deleted after analysis</li>
+                                <li>No personal information is stored</li>
+                                <li>All uploads are encrypted during transmission</li>
+                            </ul>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <i class="fas fa-brain me-2"></i>Analyze Document
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Analysis Process Info -->
+            <div class="row mt-4">
+                <div class="col-md-4 text-center">
+                    <div class="process-step">
+                        <div class="process-icon bg-primary text-white">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h6 class="mt-2">1. Upload</h6>
+                        <small class="text-muted">Secure file transmission</small>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="process-step">
+                        <div class="process-icon bg-warning text-white">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h6 class="mt-2">2. Process</h6>
+                        <small class="text-muted">AI-powered analysis</small>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="process-step">
+                        <div class="process-icon bg-success text-white">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h6 class="mt-2">3. Results</h6>
+                        <small class="text-muted">Detailed report</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What We Detect -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-search me-2"></i>What We Detect</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Corruption Indicators</h6>
+                            <ul class="small">
+                                <li>Bribery and kickbacks</li>
+                                <li>Embezzlement schemes</li>
+                                <li>Contract inflation</li>
+                                <li>Ghost workers</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-warning">Fraud Patterns</h6>
+                            <ul class="small">
+                                <li>419 advance fee fraud</li>
+                                <li>Money laundering</li>
+                                <li>Fake financial documents</li>
+                                <li>Suspicious transactions</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5>Analyzing Document...</h5>
+                <p class="text-muted mb-0">Please wait while our AI processes your document for fraud indicators.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadForm = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            filePreview.classList.remove('d-none');
+        } else {
+            filePreview.classList.add('d-none');
+        }
+    });
+
+    // Form submit handler
+    uploadForm.addEventListener('submit', function(e) {
+        const file = fileInput.files[0];
+        if (file) {
+            // Show loading modal
+            loadingModal.show();
+            submitBtn.disabled = true;
+        }
+    });
+
+    // Format file size function
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+});
+</script>
+{% endblock %}

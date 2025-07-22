@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - LeakGPT Naija Pro{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="fw-bold">
+                    <i class="fas fa-chart-line me-3 text-primary"></i>Analysis Results
+                </h1>
+                <p class="text-muted">
+                    AI-powered fraud detection analysis for: <strong>{{ analysis.filename }}</strong>
+                </p>
+            </div>
+
+            <!-- Risk Assessment Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header {% if analysis.is_flagged %}bg-danger{% elif analysis.risk_score >= 30 %}bg-warning{% else %}bg-success{% endif %} text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="mb-0">
+                                <i class="fas {% if analysis.is_flagged %}fa-exclamation-triangle{% elif analysis.risk_score >= 30 %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                                Risk Assessment
+                            </h5>
+                        </div>
+                        <div class="col-auto">
+                            <div class="risk-score-badge">
+                                <span class="fw-bold">{{ analysis.risk_score }}/100</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Risk Score Progress Bar -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold">Risk Score</span>
+                            <span class="text-muted">{{ analysis.risk_score }}/100</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar {% if analysis.risk_score >= 70 %}bg-danger{% elif analysis.risk_score >= 40 %}bg-warning{% else %}bg-success{% endif %}" 
+                                 role="progressbar" style="width: {{ analysis.risk_score }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-success">Low Risk</small>
+                            <small class="text-warning">Medium Risk</small>
+                            <small class="text-danger">High Risk</small>
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="alert {% if analysis.is_flagged %}alert-danger{% elif analysis.risk_score >= 30 %}alert-warning{% else %}alert-success{% endif %}">
+                        <h6 class="alert-heading">Analysis Summary</h6>
+                        <p class="mb-0">{{ analysis.summary }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flagged Keywords -->
+            {% if flagged_keywords %}
+            <div class="card shadow mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-flag me-2"></i>Flagged Keywords ({{ flagged_keywords|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">The following suspicious terms were detected in your document:</p>
+                    <div class="keywords-container">
+                        {% for keyword in flagged_keywords %}
+                        <span class="badge bg-danger me-2 mb-2 p-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>{{ keyword }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Document Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Document Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Filename:</dt>
+                                <dd class="col-sm-8">{{ analysis.filename }}</dd>
+                                
+                                <dt class="col-sm-4">File Type:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-secondary">{{ analysis.file_type.upper() }}</span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Analysis Date:</dt>
+                                <dd class="col-sm-8">{{ analysis.analysis_date.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Status:</dt>
+                                <dd class="col-sm-8">
+                                    {% if analysis.is_flagged %}
+                                    <span class="badge bg-danger">Flagged for Review</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Clean</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Word Count:</dt>
+                                <dd class="col-sm-8">{{ analysis.original_text.split()|length }} words</dd>
+                                
+                                <dt class="col-sm-4">Character Count:</dt>
+                                <dd class="col-sm-8">{{ analysis.original_text|length }} characters</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Preview -->
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-eye me-2"></i>Document Preview
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#documentContent">
+                            <i class="fas fa-chevron-down me-1"></i>Toggle Preview
+                        </button>
+                    </div>
+                </div>
+                <div class="collapse" id="documentContent">
+                    <div class="card-body">
+                        <div class="document-preview">
+                            <pre class="pre-scrollable">{{ analysis.original_text }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            {% if analysis.is_flagged %}
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-route me-2"></i>Recommended Next Steps
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-danger">Immediate Actions</h6>
+                            <ul>
+                                <li>Save a copy of this analysis</li>
+                                <li>Report to relevant authorities</li>
+                                <li>Gather additional evidence</li>
+                                <li>Document all related communications</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Reporting Channels</h6>
+                            <ul>
+                                <li><strong>EFCC:</strong> Economic and Financial Crimes Commission</li>
+                                <li><strong>ICPC:</strong> Independent Corrupt Practices Commission</li>
+                                <li><strong>Police:</strong> Nigeria Police Force</li>
+                                <li><strong>DSS:</strong> Department of State Services</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="text-center mb-4">
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('upload_page') }}" class="btn btn-primary">
+                        <i class="fas fa-upload me-2"></i>Analyze Another Document
+                    </a>
+                    <a href="{{ url_for('scam_report_page') }}" class="btn btn-outline-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Report a Scam
+                    </a>
+                    <button class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Share Results (Anonymous) -->
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-share-alt me-2"></i>Share Analysis (Anonymous)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Help others by sharing this analysis anonymously. No personal information is included.
+                    </p>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="shareUrl" 
+                               value="{{ request.url }}" readonly>
+                        <button class="btn btn-outline-primary" type="button" onclick="copyToClipboard()">
+                            <i class="fas fa-copy me-1"></i>Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard() {
+    const shareUrl = document.getElementById('shareUrl');
+    shareUrl.select();
+    shareUrl.setSelectionRange(0, 99999);
+    
+    try {
+        document.execCommand('copy');
+        
+        // Show success message
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+        button.classList.replace('btn-outline-primary', 'btn-success');
+        
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.replace('btn-success', 'btn-outline-primary');
+        }, 2000);
+    } catch (err) {
+        alert('Unable to copy to clipboard. Please copy the link manually.');
+    }
+}
+
+// Highlight flagged keywords in document preview
+document.addEventListener('DOMContentLoaded', function() {
+    const documentPreview = document.querySelector('.document-preview pre');
+    const flaggedKeywords = {{ flagged_keywords | tojsonfilter | safe }};
+    
+    if (documentPreview && flaggedKeywords.length > 0) {
+        let content = documentPreview.textContent;
+        
+        flaggedKeywords.forEach(keyword => {
+            const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+            content = content.replace(regex, `<mark class="bg-danger text-white">$&</mark>`);
+        });
+        
+        documentPreview.innerHTML = content;
+    }
+});
+</script>
+
+<style>
+.risk-score-badge {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 1.1rem;
+}
+
+.keywords-container .badge {
+    font-size: 0.9rem;
+}
+
+.document-preview pre {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+@media print {
+    .btn, .card-header button, .share-section {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Report Scam - LeakGPT Naija Pro{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="fw-bold text-danger">
+                    <i class="fas fa-exclamation-triangle me-3"></i>Report Scam Activity
+                </h1>
+                <p class="text-muted">
+                    Help protect others by reporting suspicious messages, URLs, or phone numbers. 
+                    Your report is anonymous and helps build a safer digital Nigeria.
+                </p>
+            </div>
+
+            <!-- Report Form -->
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-flag me-2"></i>Scam Report Form</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="scamReportForm">
+                        <!-- Report Type -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Type of Scam</label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check form-check-card">
+                                        <input class="form-check-input" type="radio" name="report_type" 
+                                               id="message" value="message" required>
+                                        <label class="form-check-label" for="message">
+                                            <div class="card h-100">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-sms fa-2x text-primary mb-2"></i>
+                                                    <h6>Scam Message</h6>
+                                                    <small class="text-muted">SMS, WhatsApp, Email</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-check-card">
+                                        <input class="form-check-input" type="radio" name="report_type" 
+                                               id="url" value="url" required>
+                                        <label class="form-check-label" for="url">
+                                            <div class="card h-100">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-link fa-2x text-warning mb-2"></i>
+                                                    <h6>Suspicious URL</h6>
+                                                    <small class="text-muted">Phishing links, fake sites</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-check-card">
+                                        <input class="form-check-input" type="radio" name="report_type" 
+                                               id="phone" value="phone" required>
+                                        <label class="form-check-label" for="phone">
+                                            <div class="card h-100">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-phone fa-2x text-danger mb-2"></i>
+                                                    <h6>Phone Number</h6>
+                                                    <small class="text-muted">Scam calls, fake numbers</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content Field -->
+                        <div class="mb-4">
+                            <label for="content" class="form-label fw-bold">
+                                <span id="contentLabel">Scam Content</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control form-control-lg" id="content" name="content" 
+                                      rows="5" required placeholder="Enter the suspicious content here..."></textarea>
+                            <div class="form-text" id="contentHelp">
+                                Provide the exact message, URL, or phone number you want to report.
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-bold">Additional Details (Optional)</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="3" placeholder="Provide any additional context or details about the scam..."></textarea>
+                            <div class="form-text">
+                                Help us understand the context - when did you receive it, how did they contact you, etc.
+                            </div>
+                        </div>
+
+                        <!-- Warning Signs -->
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-lightbulb me-2"></i>Common Scam Warning Signs
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="small mb-0">
+                                        <li>Urgent action required</li>
+                                        <li>Too good to be true offers</li>
+                                        <li>Request for personal information</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="small mb-0">
+                                        <li>Suspicious links or attachments</li>
+                                        <li>Poor grammar and spelling</li>
+                                        <li>Requests for money or payments</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Notice -->
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-user-secret me-2"></i>Anonymous Reporting
+                            </h6>
+                            <p class="small mb-0">
+                                Your report is completely anonymous. We only collect the information you provide 
+                                to help identify and prevent scams. No personal data is stored.
+                            </p>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-flag me-2"></i>Submit Scam Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Examples Section -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-sms me-2"></i>Message Examples</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="small mb-0">
+                                <li>Lottery winning notifications</li>
+                                <li>Fake bank alerts</li>
+                                <li>419 advance fee emails</li>
+                                <li>Romance scam messages</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-link me-2"></i>URL Examples</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="small mb-0">
+                                <li>Fake banking websites</li>
+                                <li>Phishing login pages</li>
+                                <li>Malicious download links</li>
+                                <li>Fake e-commerce sites</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-phone me-2"></i>Phone Examples</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="small mb-0">
+                                <li>Robocalls with scam offers</li>
+                                <li>Fake bank representatives</li>
+                                <li>Impersonation calls</li>
+                                <li>Threatening debt calls</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reportTypeInputs = document.querySelectorAll('input[name="report_type"]');
+    const contentLabel = document.getElementById('contentLabel');
+    const contentHelp = document.getElementById('contentHelp');
+    const contentField = document.getElementById('content');
+
+    // Update labels based on selected report type
+    reportTypeInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const type = this.value;
+            
+            switch(type) {
+                case 'message':
+                    contentLabel.textContent = 'Scam Message Content';
+                    contentHelp.textContent = 'Copy and paste the suspicious message exactly as you received it.';
+                    contentField.placeholder = 'Paste the scam message here...';
+                    break;
+                case 'url':
+                    contentLabel.textContent = 'Suspicious URL';
+                    contentHelp.textContent = 'Enter the complete URL of the suspicious website or link.';
+                    contentField.placeholder = 'https://suspicious-website.com/...';
+                    break;
+                case 'phone':
+                    contentLabel.textContent = 'Phone Number';
+                    contentHelp.textContent = 'Enter the phone number that contacted you with scam content.';
+                    contentField.placeholder = '+234 xxx xxx xxxx';
+                    break;
+            }
+        });
+    });
+
+    // Form validation
+    const form = document.getElementById('scamReportForm');
+    form.addEventListener('submit', function(e) {
+        const reportType = document.querySelector('input[name="report_type"]:checked');
+        const content = document.getElementById('content').value.trim();
+        
+        if (!reportType) {
+            e.preventDefault();
+            alert('Please select the type of scam you want to report.');
+            return;
+        }
+        
+        if (!content) {
+            e.preventDefault();
+            alert('Please provide the scam content.');
+            return;
+        }
+        
+        // Additional validation for URLs
+        if (reportType.value === 'url' && content) {
+            if (!content.includes('.') && !content.includes('://')) {
+                if (!confirm('The URL you entered doesn\'t look like a typical web address. Are you sure this is correct?')) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
