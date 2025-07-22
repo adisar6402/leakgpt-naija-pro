@@ -86,6 +86,18 @@ def upload_file():
             log_admin_action('document_uploaded', f'Document ID: {analysis.id}', 
                            f'File: {file.filename}, Risk Score: {analysis_result["risk_score"]}')
             
+            # Django integration: Track analytics and sync data
+            try:
+                from hybrid_app import track_analytics_event, sync_document_to_django
+                track_analytics_event('document_upload', {
+                    'filename': file.filename,
+                    'risk_score': analysis_result['risk_score'],
+                    'is_flagged': analysis_result['is_flagged']
+                })
+                sync_document_to_django(analysis)
+            except Exception as e:
+                app.logger.error(f"Django integration error: {e}")
+            
             # Send email notification if flagged
             if analysis_result['is_flagged']:
                 send_admin_notification(
@@ -153,6 +165,17 @@ def submit_scam_report():
         # Log the scam report action
         log_admin_action('scam_reported', f'Report ID: {scam_report.id}', 
                        f'Type: {report_type}, Risk Level: {analysis_result["risk_level"]}')
+        
+        # Django integration: Track analytics and sync data
+        try:
+            from hybrid_app import track_analytics_event, sync_scam_report_to_django
+            track_analytics_event('scam_report', {
+                'report_type': report_type,
+                'risk_level': analysis_result['risk_level']
+            })
+            sync_scam_report_to_django(scam_report)
+        except Exception as e:
+            app.logger.error(f"Django integration error: {e}")
         
         # Send email notification
         send_admin_notification(

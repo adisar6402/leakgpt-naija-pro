@@ -18,20 +18,30 @@ Preferred communication style: Simple, everyday language.
 - **Static Assets**: Organized CSS/JS files with proper caching strategies
 
 ### Backend Architecture
-- **Framework**: Flask with SQLAlchemy ORM
+- **Primary Framework**: Flask with SQLAlchemy ORM for main application
+- **Secondary Framework**: Django with Django REST Framework for advanced analytics and reporting
 - **Language**: Python 3.8+
-- **Structure**: MVC pattern with separate models, views, and business logic
+- **Structure**: Hybrid Flask-Django architecture with shared database
 - **File Processing**: PyPDF2 for PDF text extraction, secure file handling
-- **Authentication**: Flask-Login for admin sessions only (anonymous public access)
+- **Authentication**: Flask-Login for admin sessions, Django admin for advanced management
+- **API Layer**: Django REST Framework provides RESTful APIs for analytics and reporting
 
 ### Database Architecture
-- **Primary**: SQLite for development (configurable to PostgreSQL via DATABASE_URL)
-- **ORM**: SQLAlchemy with declarative base model
-- **Models**: 
+- **Primary**: PostgreSQL (configured via DATABASE_URL environment variables)
+- **ORM**: SQLAlchemy for Flask models, Django ORM for Django models
+- **Flask Models**: 
   - DocumentAnalysis (stores analysis results)
   - ScamReport (fraud reports)
   - ContactMessage (user inquiries)
   - AdminUser (admin authentication)
+  - AuditLog (security audit trail)
+  - NotificationSettings (email preferences)
+- **Django Models**:
+  - AnalyticsEvent (tracks user interactions)
+  - SystemMetrics (performance monitoring)
+  - DocumentReport (enhanced document tracking)
+  - ScamReportEnhanced (advanced scam analysis)
+  - TrendAnalysis (fraud pattern tracking)
 
 ## Key Components
 
