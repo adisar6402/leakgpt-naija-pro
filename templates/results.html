@@ -246,7 +246,7 @@ function copyToClipboard() {
 // Highlight flagged keywords in document preview
 document.addEventListener('DOMContentLoaded', function() {
     const documentPreview = document.querySelector('.document-preview pre');
-    const flaggedKeywords = {{ flagged_keywords | tojsonfilter | safe }};
+    const flaggedKeywords = {{ flagged_keywords | tojson | safe }};
     
     if (documentPreview && flaggedKeywords.length > 0) {
         let content = documentPreview.textContent;
