@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found - LeakGPT Naija Pro{% endblock %}
+{% block description %}The page you're looking for could not be found on our anonymous whistleblowing platform.{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <div class="error-page">
+                <div class="error-icon mb-4">
+                    <i class="fas fa-search text-primary" style="font-size: 5rem; opacity: 0.3;"></i>
+                </div>
+                
+                <h1 class="display-1 fw-bold text-primary mb-3">404</h1>
+                <h2 class="h3 mb-3">Page Not Found</h2>
+                <p class="lead text-muted mb-4">
+                    The page you're looking for seems to have gone missing. 
+                    It might have been moved, deleted, or the URL was typed incorrectly.
+                </p>
+                
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home me-2"></i>Return Home
+                    </a>
+                    <a href="{{ url_for('upload_page') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-upload me-2"></i>Upload Document
+                    </a>
+                    <a href="{{ url_for('scam_report_page') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Report Scam
+                    </a>
+                </div>
+                
+                <div class="mt-5 p-4 bg-light rounded border-radius-lg">
+                    <h5 class="mb-3">Need Help?</h5>
+                    <p class="mb-3">If you believe this is an error or need assistance:</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-envelope text-primary me-2"></i>
+                            <a href="{{ url_for('contact_page') }}" class="text-decoration-none">Contact our support team</a>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-shield-alt text-primary me-2"></i>
+                            Your anonymity remains protected
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            All reports are processed securely
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+[data-bs-theme="dark"] .bg-light {
+    background-color: var(--bs-secondary-bg) !important;
+}
+
+.error-page {
+    animation: fadeInUp 0.8s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

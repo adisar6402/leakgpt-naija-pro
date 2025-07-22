@@ -53,3 +53,34 @@ class ContactMessage(db.Model):
 
     def __repr__(self):
         return f'<ContactMessage from {self.name}>'
+
+class AuditLog(db.Model):
+    """Model for tracking admin actions and system events"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('admin_user.id'), nullable=True)
+    action = db.Column(db.String(100), nullable=False)  # 'login', 'logout', 'view_dashboard', 'export_data', etc.
+    resource = db.Column(db.String(100), nullable=True)  # What was accessed/modified
+    details = db.Column(db.Text, nullable=True)  # Additional context
+    ip_address = db.Column(db.String(45), nullable=False)
+    user_agent = db.Column(db.String(500), nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationship to admin user
+    user = db.relationship('AdminUser', backref=db.backref('audit_logs', lazy=True))
+
+    def __repr__(self):
+        return f'<AuditLog {self.action} by user {self.user_id}>'
+
+class NotificationSettings(db.Model):
+    """Model for storing admin notification preferences"""
+    id = db.Column(db.Integer, primary_key=True)
+    admin_email = db.Column(db.String(120), nullable=False)
+    notify_new_documents = db.Column(db.Boolean, default=True)
+    notify_flagged_documents = db.Column(db.Boolean, default=True)
+    notify_scam_reports = db.Column(db.Boolean, default=True)
+    notify_contact_messages = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<NotificationSettings for {self.admin_email}>'

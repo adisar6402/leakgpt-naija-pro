@@ -58,6 +58,8 @@ Preferred communication style: Simple, everyday language.
 - **Secure File Handling**: Files deleted after analysis
 - **IP Logging**: Limited logging for security purposes only
 - **HTTPS Encryption**: All data transfers encrypted
+- **Audit Logging**: Comprehensive tracking of admin actions
+- **Rate Limiting**: Client-side protection against spam submissions
 
 ## Data Flow
 

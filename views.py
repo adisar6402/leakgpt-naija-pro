@@ -10,7 +10,7 @@ from io import StringIO, BytesIO
 import PyPDF2
 
 from app import app, db
-from models import DocumentAnalysis, ScamReport, ContactMessage, AdminUser
+from models import DocumentAnalysis, ScamReport, ContactMessage, AdminUser, AuditLog, NotificationSettings
 from ai_logic import analyze_document, analyze_scam_content
 from utils import allowed_file, extract_text_from_pdf, get_client_ip
 
@@ -82,6 +82,24 @@ def upload_file():
             db.session.add(analysis)
             db.session.commit()
             
+            # Log the upload action
+            log_admin_action('document_uploaded', f'Document ID: {analysis.id}', 
+                           f'File: {file.filename}, Risk Score: {analysis_result["risk_score"]}')
+            
+            # Send email notification if flagged
+            if analysis_result['is_flagged']:
+                send_admin_notification(
+                    subject=f'High-Risk Document Detected - {file.filename}',
+                    message=f'A document with risk score {analysis_result["risk_score"]} has been flagged for review.',
+                    notification_type='flagged_document'
+                )
+            else:
+                send_admin_notification(
+                    subject=f'New Document Analyzed - {file.filename}',
+                    message=f'A new document has been processed with risk score {analysis_result["risk_score"]}.',
+                    notification_type='document'
+                )
+            
             # Clean up uploaded file
             os.remove(filepath)
             
@@ -132,6 +150,17 @@ def submit_scam_report():
         db.session.add(scam_report)
         db.session.commit()
         
+        # Log the scam report action
+        log_admin_action('scam_reported', f'Report ID: {scam_report.id}', 
+                       f'Type: {report_type}, Risk Level: {analysis_result["risk_level"]}')
+        
+        # Send email notification
+        send_admin_notification(
+            subject=f'New Scam Report - {report_type.title()}',
+            message=f'A new {report_type} scam report with {analysis_result["risk_level"]} risk level has been submitted.',
+            notification_type='scam_report'
+        )
+        
         flash('Thank you for your report. It has been submitted for review.', 'success')
         return redirect(url_for('index'))
         
@@ -177,6 +206,17 @@ def submit_contact():
         
         db.session.add(contact_msg)
         db.session.commit()
+        
+        # Log the contact message
+        log_admin_action('contact_submitted', f'Message ID: {contact_msg.id}', 
+                       f'Subject: {subject}, From: {email}')
+        
+        # Send email notification
+        send_admin_notification(
+            subject=f'New Contact Message - {subject}',
+            message=f'A new contact message from {name} ({email}) has been received.',
+            notification_type='contact'
+        )
         
         flash('Your message has been sent. We will get back to you soon.', 'success')
         return redirect(url_for('index'))
@@ -347,3 +387,76 @@ def export_scam_reports():
     response.headers['Content-Disposition'] = f'attachment; filename=scam_reports_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
     
     return response
+
+# Audit logging utility functions
+def log_admin_action(action, resource=None, details=None):
+    """Log admin actions for security auditing"""
+    try:
+        audit_log = AuditLog(
+            user_id=current_user.id if current_user.is_authenticated else None,
+            action=action,
+            resource=resource,
+            details=details,
+            ip_address=get_client_ip(),
+            user_agent=request.headers.get('User-Agent', '')[:500]
+        )
+        db.session.add(audit_log)
+        db.session.commit()
+    except Exception as e:
+        app.logger.error(f"Failed to log admin action: {e}")
+
+def send_admin_notification(subject, message, notification_type):
+    """Send email notification to admin if enabled"""
+    try:
+        # Check if notifications are enabled for this type
+        settings = NotificationSettings.query.filter_by(
+            admin_email=app.config.get('ADMIN_EMAIL', 'admin@leakgpt.com')
+        ).first()
+        
+        if not settings:
+            # Create default settings if none exist
+            settings = NotificationSettings(
+                admin_email=app.config.get('ADMIN_EMAIL', 'admin@leakgpt.com')
+            )
+            db.session.add(settings)
+            db.session.commit()
+        
+        # Check if this notification type is enabled
+        should_notify = False
+        if notification_type == 'document' and settings.notify_new_documents:
+            should_notify = True
+        elif notification_type == 'flagged_document' and settings.notify_flagged_documents:
+            should_notify = True
+        elif notification_type == 'scam_report' and settings.notify_scam_reports:
+            should_notify = True
+        elif notification_type == 'contact' and settings.notify_contact_messages:
+            should_notify = True
+        
+        if should_notify:
+            # In a real implementation, you would send actual emails here
+            # For now, we'll just log the notification
+            app.logger.info(f"Email notification: {subject} - {message}")
+            
+    except Exception as e:
+        app.logger.error(f"Failed to send admin notification: {e}")
+
+# Error handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    """Handle 404 errors with custom page"""
+    log_admin_action('page_not_found', request.url, f"404 error on {request.url}")
+    return render_template('errors/404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    """Handle 500 errors with custom page"""
+    db.session.rollback()
+    log_admin_action('server_error', request.url, f"500 error on {request.url}: {str(error)}")
+    return render_template('errors/500.html'), 500
+
+@app.errorhandler(403)
+def forbidden_error(error):
+    """Handle 403 errors"""
+    log_admin_action('access_denied', request.url, f"403 error on {request.url}")
+    flash('Access denied. You do not have permission to access this resource.', 'error')
+    return redirect(url_for('index'))
