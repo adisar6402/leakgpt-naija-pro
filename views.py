@@ -281,31 +281,38 @@ def admin_logout():
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
-    """Admin dashboard"""
-    # Get filter parameters
     date_filter = request.args.get('date_filter', '7')  # days
     report_type = request.args.get('type', 'all')
     keyword_filter = request.args.get('keyword', '')
-    
-    # Calculate date range
+
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=int(date_filter))
-    
-    # Build queries
+
     doc_query = DocumentAnalysis.query.filter(DocumentAnalysis.analysis_date >= start_date)
     scam_query = ScamReport.query.filter(ScamReport.reported_date >= start_date)
-    
-    # Apply filters
+
     if keyword_filter:
         doc_query = doc_query.filter(DocumentAnalysis.flagged_keywords.contains(keyword_filter))
         scam_query = scam_query.filter(ScamReport.flagged_patterns.contains(keyword_filter))
-    
-    # Get data
+
     documents = doc_query.order_by(DocumentAnalysis.analysis_date.desc()).all()
     scam_reports = scam_query.order_by(ScamReport.reported_date.desc()).all()
     contact_messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).limit(20).all()
-    
-    # Calculate statistics
+
+    # Add parsed_keywords to each document
+    for doc in documents:
+        try:
+            doc.parsed_keywords = json.loads(doc.flagged_keywords) if doc.flagged_keywords else []
+        except Exception:
+            doc.parsed_keywords = []
+
+    # Add parsed_patterns to each scam report
+    for report in scam_reports:
+        try:
+            report.parsed_patterns = json.loads(report.flagged_patterns) if report.flagged_patterns else []
+        except Exception:
+            report.parsed_patterns = []
+
     stats = {
         'total_documents': len(documents),
         'flagged_documents': sum(1 for doc in documents if doc.is_flagged),
@@ -313,20 +320,17 @@ def admin_dashboard():
         'high_risk_scams': sum(1 for report in scam_reports if report.risk_level == 'high'),
         'avg_risk_score': sum(doc.risk_score for doc in documents) / len(documents) if documents else 0
     }
-    
-    # Get keyword trends
+
     all_keywords = []
     for doc in documents:
-        if doc.flagged_keywords:
-            keywords = json.loads(doc.flagged_keywords)
-            all_keywords.extend(keywords)
-    
+        all_keywords.extend(doc.parsed_keywords)
+
     keyword_counts = {}
     for keyword in all_keywords:
         keyword_counts[keyword] = keyword_counts.get(keyword, 0) + 1
-    
+
     top_keywords = sorted(keyword_counts.items(), key=lambda x: x[1], reverse=True)[:10]
-    
+
     return render_template('admin/dashboard.html', 
                          documents=documents,
                          scam_reports=scam_reports,

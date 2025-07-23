@@ -224,13 +224,12 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% set keywords = doc.flagged_keywords|fromjson %}
-                                                {% if keywords %}
-                                                    {% for keyword in keywords[:3] %}
+                                                {% if doc.parsed_keywords %}
+                                                    {% for keyword in doc.parsed_keywords[:3] %}
                                                     <span class="badge bg-warning text-dark me-1">{{ keyword }}</span>
                                                     {% endfor %}
-                                                    {% if keywords|length > 3 %}
-                                                    <small>+{{ keywords|length - 3 }} more</small>
+                                                    {% if doc.parsed_keywords|length > 3 %}
+                                                    <small>+{{ doc.parsed_keywords|length - 3 }} more</small>
                                                     {% endif %}
                                                 {% else %}
                                                 <span class="text-muted">None</span>
@@ -295,13 +294,12 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                {% set patterns = report.flagged_patterns|fromjson %}
-                                                {% if patterns %}
-                                                    {% for pattern in patterns[:2] %}
+                                                {% if report.parsed_patterns %}
+                                                    {% for pattern in report.parsed_patterns[:2] %}
                                                     <span class="badge bg-warning text-dark me-1">{{ pattern }}</span>
                                                     {% endfor %}
-                                                    {% if patterns|length > 2 %}
-                                                    <small>+{{ patterns|length - 2 }} more</small>
+                                                    {% if report.parsed_patterns|length > 2 %}
+                                                    <small>+{{ report.parsed_patterns|length - 2 }} more</small>
                                                     {% endif %}
                                                 {% else %}
                                                 <span class="text-muted">None</span>
