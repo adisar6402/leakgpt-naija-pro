@@ -57,17 +57,10 @@ An anonymous whistleblowing and fraud detection platform powered by AI, specific
 
 4. **Run the application**
    ```bash
-   python main.py
+   python hybrid.app.py
    ```
 
 5. **Access the application**
    Open your browser and navigate to: `http://localhost:5000`
 
-### Default Admin Credentials
-- **Username**: `admin`
-- **Password**: `admin123`
-
-⚠️ **Important**: Change the default admin credentials in production!
-
-## 📁 Project Structure
 
