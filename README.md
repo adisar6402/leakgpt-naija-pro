@@ -1,66 +1,143 @@
-# LeakGPT Naija Pro
+# 🛡️ LeakGPT Naija Pro
 
-An anonymous whistleblowing and fraud detection platform powered by AI, specifically designed for Nigeria. This application helps users detect corruption, fraud, and scams by analyzing documents and providing secure reporting mechanisms.
+> Anonymous whistleblowing & AI-powered fraud detection built for Nigeria.  
+> A hybrid Flask-Django web app for secure document analysis, scam reporting, and corruption trend monitoring.  
+> 🚀 Built by **Abdulrahman Adisa Amuda** for #3MTT Showcase.
 
-## 🛡️ Features
+---
 
-### Document Analysis
-- **File Upload**: Support for `.txt` and `.pdf` files (up to 16MB)
-- **AI-Powered Detection**: Advanced keyword analysis for corruption and fraud indicators
-- **Risk Assessment**: Comprehensive scoring system (0-100) with detailed summaries
-- **Anonymous Processing**: No personal information stored, files deleted after analysis
-- **Real-time Results**: Instant analysis with flagged content highlighting
+## 🌍 Overview
 
-### Scam Reporting
-- **Multi-Type Reports**: Support for suspicious messages, URLs, and phone numbers
-- **Pattern Detection**: Nigerian-specific fraud pattern recognition
-- **Risk Classification**: Automatic risk level assessment (Low/Medium/High)
-- **Anonymous Submission**: Complete anonymity for whistleblowers
+**LeakGPT Naija Pro** is a secure, anonymous platform that enables users to report and detect corruption, scams, and fraud in Nigeria using AI. The system combines a Flask-powered frontend with Django backend intelligence to provide real-time risk scoring and analysis of user-uploaded documents and scam reports.
 
-### Admin Dashboard
-- **Comprehensive Analytics**: Track all uploads, flagged content, and trends
-- **Advanced Filtering**: Filter by date, type, keywords, and risk levels
-- **Export Functionality**: CSV export for documents and scam reports
-- **Real-time Statistics**: Live dashboard with key metrics
-- **Keyword Trends**: Monitor most common flagged terms
+---
 
-### Security & Privacy
-- **Complete Anonymity**: No user registration required
-- **Secure File Handling**: Files processed and deleted immediately
-- **Encrypted Transmission**: HTTPS encryption for all data transfers
-- **IP Privacy**: Limited IP logging for security purposes only
+## 🔐 Key Features
+
+### 📄 Document Analysis
+- 📂 Upload `.txt` or `.pdf` files (max 16MB)
+- 🤖 AI-driven detection of fraud/corruption keywords
+- 🧠 Instant scoring (0–100) with summary + flagged terms
+- 👤 Anonymous processing (no user tracking)
+- 🗑️ Secure file deletion after processing
+
+### 🚨 Scam Reporting
+- 📞 Submit suspicious phone numbers, URLs, messages
+- 🕵️ Detect Nigerian-specific scam patterns
+- ⚠️ Auto-classify risk levels (Low / Medium / High)
+- 🔒 Anonymous, encrypted submission
+
+### 📊 Admin Dashboard
+- 📥 View all reports & uploads in real-time
+- 🗂️ Filter by type, date, keyword, risk score
+- 📤 Export reports to CSV
+- 📈 Monitor trending flagged terms
+
+### 🔒 Security & Privacy
+- 🛑 No user registration or login needed
+- 🔐 All data transfer over HTTPS
+- 🧾 IP logging is minimal and secure
+- 🧹 Files deleted after processing
+
+---
+
+## ⚙️ Tech Stack
+
+| Layer        | Tech Used                        |
+|--------------|----------------------------------|
+| 🖥️ Frontend     | Flask, Bootstrap 5, Jinja2       |
+| 🧠 Backend      | Django, SQLite3, Flask-Login     |
+| 🤖 AI Logic     | Python NLP (custom keywords)     |
+| 🗃️ Reports & DB | Django Models, SQLAlchemy        |
+| 🔑 Auth         | Admin-only (Flask Login)         |
+| 🚀 Deployment   | Replit / Heroku (Procfile-ready) |
+
+---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.8 or higher
-- pip (Python package manager)
+### 📦 Prerequisites
+- ✅ Python 3.8+
+- ✅ `pip` package manager
+- ✅ Git
 
-### Installation
+### 🔧 Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd leakgpt-naija-pro
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/your-username/leakgpt-naija-pro.git
+cd leakgpt-naija-pro
 
-2. **Install dependencies**
-   ```bash
-   pip install flask flask-sqlalchemy flask-login werkzeug PyPDF2
-   ```
+# Activate virtual environment (optional but recommended)
+python -m venv venv
+.\venv\Scripts\activate  # On Windows
+# source venv/bin/activate  # On macOS/Linux
 
-3. **Set up environment variables** (optional)
-   ```bash
-   export SESSION_SECRET="your-secret-key-here"
-   export DATABASE_URL="sqlite:///leakgpt.db"
-   ```
+# Install dependencies
+pip install -r requirements.txt
+```
 
-4. **Run the application**
-   ```bash
-   python hybrid.app.py
-   ```
+### ⚙️ Run the App
 
-5. **Access the application**
-   Open your browser and navigate to: `http://localhost:5000`
+```bash
+# Run the hybrid app (Flask + Django bridge)
+python hybrid_app.py
+```
 
+The app should now be live at:  
+👉 **http://127.0.0.1:5000**
 
+---
+
+## 📁 Project Structure
+
+```
+leakgpt-naija-pro/
+├── app.py                  # Flask frontend entry point
+├── hybrid_app.py           # Main entry (Flask + Django bridge)
+├── manage.py               # Django CLI
+├── django_app/             # Django project folder
+├── templates/              # Jinja2 HTML templates
+├── static/                 # CSS, JS, icons
+├── instance/leakgpt.db     # SQLite3 database
+├── requirements.txt        # Python dependencies
+└── README.md
+```
+
+---
+
+## 🤖 AI Analysis Logic
+
+- 🔍 Keyword scanning across financial, legal, and corruption-specific terms  
+- 📊 Scoring mechanism based on severity, frequency, and context  
+- 🧠 Detection of phishing and fraud pattern keywords in scam reports  
+
+---
+
+## 🧪 Sample Use Cases
+
+- 📰 Journalists verifying leaked documents anonymously  
+- 👥 Citizens reporting fraud or corruption in agencies  
+- 📉 Analysts monitoring trending risk patterns  
+
+---
+
+## 📢 Attribution & Showcase
+
+🚀 Built by **Abdulrahman Adisa Amuda** for the **#3MTT Showcase**  
+Empowering Nigerian innovation through technology 🇳🇬
+
+🧾 The footer of the web app reflects this credit.
+
+---
+
+## 📜 License
+
+This project is released under the **MIT License**.  
+Feel free to modify and reuse for civic-tech, anti-corruption, or open government purposes.
+
+---
+
+## 🧠 Footer
+
+> _"Transparency is the enemy of corruption."_ — LeakGPT Naija Pro
