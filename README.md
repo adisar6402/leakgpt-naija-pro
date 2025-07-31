@@ -1,4 +1,15 @@
-![LeakGPT Banner](https://github.com/adisar6402/leakgpt-naija-pro/blob/main/A_2D_digital_graphic_design_showcases_LeakGPT_Naij.png?raw=true)
+<!-- SEO Metadata -->
+<!--
+Title: LeakGPT Naija – AI-Powered Corruption Detector 🇳🇬
+Description: LeakGPT Naija is an AI-powered corruption analysis tool designed to uncover red flags in documents like contracts, budgets, and audit reports. Built with Flask, Tailwind CSS, and GPT-inspired logic.
+Author: Abdulrahman Adisa Amuda
+Keywords: LeakGPT, Nigeria, Corruption AI, OpenAI, Budget Analysis, Flask, Tailwind, GPT, anti-corruption, public funds, AI project
+-->
+
+<p align="center">
+  <img src="attached_assets/A_2D_digital_graphic_design_showcases_LeakGPT_Naij.png" alt="LeakGPT Naija Banner" width="80%">
+</p>
+
 
 # 🛡️ LeakGPT Naija Pro
 
