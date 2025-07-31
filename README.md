@@ -1,3 +1,5 @@
+![LeakGPT Banner](https://github.com/adisar6402/leakgpt-naija-pro/blob/main/A_2D_digital_graphic_design_showcases_LeakGPT_Naij.png?raw=true)
+
 # 🛡️ LeakGPT Naija Pro
 
 > Anonymous whistleblowing & AI-powered fraud detection built for Nigeria.  
